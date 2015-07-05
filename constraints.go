@@ -1,4 +1,4 @@
-package definitions
+package geneddl
 
 import (
 	"fmt"
