@@ -32,6 +32,10 @@ func (g *Generator) Name() string {
 
 // Generate generates the basic CRUD statements for the models
 func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]common.Output, error) {
+	if !common.IsIn("ddl", context.Config.Generators...) {
+		return nil, nil
+	}
+
 	outputs := make([]common.Output, 0)
 
 	if s.Title == "" {
