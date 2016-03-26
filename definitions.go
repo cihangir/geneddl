@@ -31,16 +31,19 @@ func (g *Generator) Name() string {
 }
 
 // Generate generates the basic CRUD statements for the models
-func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]common.Output, error) {
-	if !common.IsIn("ddl", context.Config.Generators...) {
-		return nil, nil
+func (g *Generator) Generate(req *common.Req, res *common.Res) error {
+	context := req.Context
+	s := req.Schema
+
+	if context == nil || context.Config == nil || !common.IsIn("ddl", context.Config.Generators...) {
+		return nil
+	}
+
+	if s.Title == "" {
+		return errors.New("Title should be set")
 	}
 
 	outputs := make([]common.Output, 0)
-
-	if s.Title == "" {
-		return outputs, errors.New("Title should be set")
-	}
 
 	moduleName := context.FieldNameFunc(s.Title)
 
@@ -62,7 +65,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		role, err := DefineRole(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -76,7 +79,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		db, err := DefineDatabase(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -90,7 +93,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		extenstions, err := DefineExtensions(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -107,7 +110,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		sc, err := DefineSchema(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -125,7 +128,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		sequence, err := DefineSequence(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -144,7 +147,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		types, err := DefineTypes(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -163,7 +166,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		table, err := DefineTable(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -182,7 +185,7 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		//
 		constraints, err := DefineConstraints(context, settingsDef, def)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -197,7 +200,8 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		})
 	}
 
-	return outputs, nil
+	res.Output = outputs
+	return nil
 }
 
 // CreateStatementTemplate holds the template for the create sql statement generator

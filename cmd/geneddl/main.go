@@ -44,12 +44,17 @@ func main() {
 
 	s = s.Resolve(s)
 
-	output, err := conf.DDL.Generate(c, s)
+	req := &common.Req{
+		Schema:  s,
+		Context: c,
+	}
+	res := &common.Res{}
+	err = conf.DDL.Generate(req, res)
 	if err != nil {
 		log.Fatal("geneddl err: %s", err.Error())
 	}
 
-	if err := common.WriteOutput(output); err != nil {
+	if err := common.WriteOutput(res.Output); err != nil {
 		log.Fatal("output write err: %s", err.Error())
 	}
 
