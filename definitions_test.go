@@ -22,11 +22,16 @@ func TestDefinitions(t *testing.T) {
 
 	s = s.Resolve(s)
 
-	sts, err := New().Generate(common.NewContext(), s)
+	req := &common.Req{
+		Schema:  s,
+		Context: common.NewContext(),
+	}
+	res := &common.Res{}
+	err := New().Generate(req, res)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	for i, s := range sts {
+	for i, s := range res.Output {
 		equals(t, expecteds[i], string(s.Content))
 	}
 }
