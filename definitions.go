@@ -12,7 +12,7 @@ import (
 	"github.com/cihangir/stringext"
 )
 
-const GeneratorName = "sql-definition"
+const GeneratorName = "ddl"
 
 type Generator struct {
 	DatabaseName  string
@@ -34,7 +34,7 @@ func (g *Generator) Name() string {
 func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 	context := req.Context
 
-	if context == nil || context.Config == nil || !common.IsIn("ddl", context.Config.Generators...) {
+	if context == nil || context.Config == nil || !common.IsIn(GeneratorName, context.Config.Generators...) {
 		return nil
 	}
 
@@ -60,6 +60,10 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 	moduleName := stringext.ToFieldName(req.Schema.Title)
 
 	settings := GenerateSettings(g.Name(), moduleName, req.Schema)
+	settings.SetNX("rootPathPrefix", "db")
+	rootPathPrefix := settings.Get("rootPathPrefix").(string)
+	fullPathPrefix := req.Context.Config.Target + rootPathPrefix + "/"
+	settings.Set("fullPathPrefix", fullPathPrefix)
 
 	for _, name := range schema.SortedKeys(req.Schema.Definitions) {
 		def := req.Schema.Definitions[name]
@@ -81,8 +85,12 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		}
 
 		outputs = append(outputs, common.Output{
-			Content:     role,
-			Path:        fmt.Sprintf("%s/001-%s_roles.sql", context.Config.Target, settingsDef.Get("databaseName").(string)),
+			Content: role,
+			Path: fmt.Sprintf(
+				"%s/001-%s_roles.sql",
+				fullPathPrefix,
+				settingsDef.Get("databaseName").(string),
+			),
 			DoNotFormat: true,
 		})
 
@@ -95,8 +103,12 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		}
 
 		outputs = append(outputs, common.Output{
-			Content:     db,
-			Path:        fmt.Sprintf("%s/002-%s_database.sql", context.Config.Target, settingsDef.Get("databaseName").(string)),
+			Content: db,
+			Path: fmt.Sprintf(
+				"%s/002-%s_database.sql",
+				fullPathPrefix,
+				settingsDef.Get("databaseName").(string),
+			),
 			DoNotFormat: true,
 		})
 
@@ -112,7 +124,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: extenstions,
 			Path: fmt.Sprintf(
 				"%s/003-%s_extensions.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("databaseName").(string)),
 			DoNotFormat: true,
 		})
@@ -129,7 +141,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: sc,
 			Path: fmt.Sprintf(
 				"%s/%s/004-schema.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("schemaName").(string),
 			),
 			DoNotFormat: true,
@@ -147,7 +159,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: sequence,
 			Path: fmt.Sprintf(
 				"%s/%s/005-%s-sequence.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("schemaName").(string),
 				settingsDef.Get("tableName").(string),
 			),
@@ -166,7 +178,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: types,
 			Path: fmt.Sprintf(
 				"%s/%s/006-%s-types.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("schemaName").(string),
 				settingsDef.Get("tableName").(string),
 			),
@@ -185,7 +197,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: table,
 			Path: fmt.Sprintf(
 				"%s/%s/007-%s-table.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("schemaName").(string),
 				settingsDef.Get("tableName").(string),
 			),
@@ -204,7 +216,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 			Content: constraints,
 			Path: fmt.Sprintf(
 				"%s/%s/008-%s-constraints.sql",
-				context.Config.Target,
+				fullPathPrefix,
 				settingsDef.Get("schemaName").(string),
 				settingsDef.Get("tableName").(string),
 			),
