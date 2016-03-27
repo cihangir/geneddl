@@ -2,16 +2,16 @@
 package main
 
 import (
-	gplugin "github.com/cihangir/gene/plugin"
+	"github.com/cihangir/gene/generators/common"
 	"github.com/cihangir/geneddl"
 	"github.com/hashicorp/go-plugin"
 )
 
 func main() {
 	plugin.Serve(&plugin.ServeConfig{
-		HandshakeConfig: gplugin.HandshakeConfig,
+		HandshakeConfig: common.HandshakeConfig,
 		Plugins: map[string]plugin.Plugin{
-			"generate": gplugin.NewGeneratorPlugin(geneddl.New()),
+			"generate": common.NewGeneratorPlugin(geneddl.New()),
 		},
 	})
 }
