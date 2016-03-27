@@ -2,6 +2,7 @@ package geneddl
 
 import (
 	"encoding/json"
+	"strings"
 
 	"testing"
 
@@ -21,7 +22,7 @@ func TestRoles(t *testing.T) {
 	g := New()
 
 	context := common.NewContext()
-	moduleName := context.ModuleNameFunc(s.Title)
+	moduleName := strings.ToLower(s.Title)
 	settings := GenerateSettings(g.Name(), moduleName, s)
 
 	index := 0

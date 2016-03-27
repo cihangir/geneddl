@@ -10,7 +10,7 @@ import (
 
 // DefineRole creates definition for types
 func DefineRole(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
-	temp := template.New("create_role.tmpl").Funcs(context.TemplateFuncs)
+	temp := template.New("create_role.tmpl").Funcs(common.TemplateFuncs)
 	if _, err := temp.Parse(RoleTemplate); err != nil {
 		return nil, err
 	}

@@ -35,7 +35,6 @@ func main() {
 	c := common.NewContext()
 	c.Config.Schema = conf.Schema
 	c.Config.Target = conf.Target
-	c.FieldNameFunc = geneddl.GetFieldNameFunc(conf.DDL.FieldNameCase)
 
 	s, err := common.Read(c.Config.Schema)
 	if err != nil {

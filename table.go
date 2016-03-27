@@ -9,13 +9,14 @@ import (
 
 	"github.com/cihangir/gene/generators/common"
 	"github.com/cihangir/schema"
+	"github.com/cihangir/stringext"
 )
 
 // DefineSequence creates definition for sequences
 func DefineTable(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
-	context.TemplateFuncs["GenerateSQLField"] = GenerateSQLField
+	common.TemplateFuncs["GenerateSQLField"] = GenerateSQLField
 
-	temp := template.New("create_table.tmpl").Funcs(context.TemplateFuncs)
+	temp := template.New("create_table.tmpl").Funcs(common.TemplateFuncs)
 	if _, err := temp.Parse(TableTemplate); err != nil {
 		return nil, err
 	}
@@ -62,9 +63,9 @@ func GenerateSQLField(context *common.Context, settings schema.Generator, s *sch
 
 	property := s
 
-	fieldName := context.FieldNameFunc(propertyName) // transpiled version of property
+	fieldName := stringext.ToFieldName(propertyName) // transpiled version of property
 	if property.Title != "" {
-		fieldName = context.FieldNameFunc(property.Title)
+		fieldName = stringext.ToFieldName(property.Title)
 	}
 
 	fieldType := "" // will hold the type for coloumn
@@ -122,8 +123,8 @@ func GenerateSQLField(context *common.Context, settings schema.Generator, s *sch
 		fieldType = fmt.Sprintf(
 			"%q.\"%s_%s_enum\"",
 			schemaName,
-			context.FieldNameFunc(tableName),
-			context.FieldNameFunc(propertyName),
+			stringext.ToFieldName(tableName),
+			stringext.ToFieldName(propertyName),
 		)
 	}
 

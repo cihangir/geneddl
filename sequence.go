@@ -10,7 +10,7 @@ import (
 
 // DefineSequence creates definition for sequences
 func DefineSequence(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
-	temp := template.New("create_sequences.tmpl").Funcs(context.TemplateFuncs)
+	temp := template.New("create_sequences.tmpl").Funcs(common.TemplateFuncs)
 	if _, err := temp.Parse(SequenceTemplate); err != nil {
 		return nil, err
 	}

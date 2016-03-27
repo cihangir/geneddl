@@ -10,7 +10,7 @@ import (
 
 // DefineDatabase creates definition for types
 func DefineDatabase(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
-	temp := template.New("create_database.tmpl").Funcs(context.TemplateFuncs)
+	temp := template.New("create_database.tmpl").Funcs(common.TemplateFuncs)
 	if _, err := temp.Parse(DatabaseTemplate); err != nil {
 		return nil, err
 	}

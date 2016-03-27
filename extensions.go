@@ -30,7 +30,7 @@ func DefineExtensions(context *common.Context, settings schema.Generator, s *sch
 		return nil, nil
 	}
 
-	temp := template.New("create_extensions.tmpl").Funcs(context.TemplateFuncs)
+	temp := template.New("create_extensions.tmpl").Funcs(common.TemplateFuncs)
 	if _, err := temp.Parse(ExtensionsTemplate); err != nil {
 		return nil, err
 	}
