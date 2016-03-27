@@ -41,7 +41,7 @@ func TestSequence(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedSequences[index], string(sts))
+		common.TestEquals(t, expectedSequences[index], string(sts))
 		index++
 	}
 }

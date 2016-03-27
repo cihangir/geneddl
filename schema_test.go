@@ -41,7 +41,7 @@ func TestSchema(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedSchemas[index], string(sts))
+		common.TestEquals(t, expectedSchemas[index], string(sts))
 		index++
 	}
 }

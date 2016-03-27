@@ -41,7 +41,7 @@ func TestRoles(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedRoles[index], string(sts))
+		common.TestEquals(t, expectedRoles[index], string(sts))
 		index++
 	}
 }

@@ -1,47 +1,13 @@
 package geneddl
 
 import (
-	"encoding/json"
-	"fmt"
-	"path/filepath"
-	"reflect"
-	"runtime"
-
 	"testing"
 
 	"github.com/cihangir/gene/generators/common"
-	"github.com/cihangir/gene/testdata"
-	"github.com/cihangir/schema"
 )
 
 func TestDefinitions(t *testing.T) {
-	s := &schema.Schema{}
-	if err := json.Unmarshal([]byte(testdata.TestDataFull), s); err != nil {
-		t.Fatal(err.Error())
-	}
-
-	s = s.Resolve(s)
-
-	req := &common.Req{
-		Schema:  s,
-		Context: common.NewContext(),
-	}
-	res := &common.Res{}
-	err := New().Generate(req, res)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	for i, s := range res.Output {
-		equals(t, expecteds[i], string(s.Content))
-	}
-}
-
-func equals(tb testing.TB, exp, act string) {
-	if !reflect.DeepEqual(exp, act) {
-		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("\033[31m%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\033[39m\n\n", filepath.Base(file), line, exp, act)
-		tb.Fail()
-	}
+	common.RunTest(t, New(), expecteds)
 }
 
 var expecteds = []string{`--

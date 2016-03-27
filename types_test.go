@@ -41,7 +41,7 @@ func TestTypes(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedTypes[index], string(sts))
+		common.TestEquals(t, expectedTypes[index], string(sts))
 		index++
 	}
 }

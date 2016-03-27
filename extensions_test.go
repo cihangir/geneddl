@@ -41,7 +41,7 @@ func TestExtensions(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedExtensions[index], string(sts))
+		common.TestEquals(t, expectedExtensions[index], string(sts))
 		index++
 	}
 }

@@ -40,7 +40,7 @@ func TestDatabase(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedDatabases[index], string(sts))
+		common.TestEquals(t, expectedDatabases[index], string(sts))
 		index++
 	}
 }

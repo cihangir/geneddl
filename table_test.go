@@ -41,7 +41,7 @@ func TestTable(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		equals(t, expectedTables[index], string(sts))
+		common.TestEquals(t, expectedTables[index], string(sts))
 		index++
 	}
 }
