@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/cihangir/gene/generators/common"
-	"github.com/cihangir/gene/writers"
+	"github.com/cihangir/gene/utils"
 	"github.com/cihangir/schema"
 	"github.com/cihangir/stringext"
 )
@@ -295,7 +295,7 @@ func SetDefaultSettings(genName string, defaultSettings schema.Generator, s *sch
 }
 
 func clean(b []byte) []byte {
-	b = writers.NewLinesRegex.ReplaceAll(b, []byte(""))
+	b = utils.NewLinesRegex.ReplaceAll(b, []byte(""))
 
 	// convert tabs to 4 spaces
 	b = bytes.Replace(b, []byte("\t"), []byte("    "), -1)
