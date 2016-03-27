@@ -2,9 +2,9 @@ package geneddl
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/cihangir/gene/generators/common"
 	"github.com/cihangir/gene/writers"
@@ -33,24 +33,36 @@ func (g *Generator) Name() string {
 // Generate generates the basic CRUD statements for the models
 func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 	context := req.Context
-	s := req.Schema
 
 	if context == nil || context.Config == nil || !common.IsIn("ddl", context.Config.Generators...) {
 		return nil
 	}
 
-	if s.Title == "" {
+	if req.Schema == nil {
+		if req.SchemaStr == "" {
+			return errors.New("both schema and string schema is not set")
+		}
+
+		s := &schema.Schema{}
+		if err := json.Unmarshal([]byte(req.SchemaStr), s); err != nil {
+			return err
+		}
+
+		req.Schema = s.Resolve(nil)
+	}
+
+	if req.Schema.Title == "" {
 		return errors.New("Title should be set")
 	}
 
 	outputs := make([]common.Output, 0)
 
-	moduleName := context.FieldNameFunc(s.Title)
+	moduleName := stringext.ToFieldName(req.Schema.Title)
 
-	settings := GenerateSettings(g.Name(), moduleName, s)
+	settings := GenerateSettings(g.Name(), moduleName, req.Schema)
 
-	for _, name := range schema.SortedKeys(s.Definitions) {
-		def := s.Definitions[name]
+	for _, name := range schema.SortedKeys(req.Schema.Definitions) {
+		def := req.Schema.Definitions[name]
 
 		// schema should have our generator
 		if !def.Generators.Has(g.Name()) {
@@ -58,7 +70,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		}
 
 		settingsDef := SetDefaultSettings(g.Name(), settings, def)
-		settingsDef.Set("tableName", context.FieldNameFunc(def.Title))
+		settingsDef.Set("tableName", stringext.ToFieldName(def.Title))
 
 		//
 		// generate roles
@@ -215,15 +227,6 @@ var CreateStatementTemplate = `{{DefineSQLSchema .Context .Settings .Schema}}
 
 {{DefineSQLTable .Context .Settings .Schema}}
 `
-
-func GetFieldNameFunc(name string) func(string) string {
-	switch name {
-	case "lower":
-		return strings.ToLower
-	default:
-		return stringext.ToFieldName
-	}
-}
 
 func GenerateSettings(genName string, moduleName string, s *schema.Schema) schema.Generator {
 	settings, ok := s.Generators.Get(genName)
