@@ -8,7 +8,7 @@ import (
 )
 
 func TestDefinitions(t *testing.T) {
-	common.RunTest(t, New(), testdata.TestDataFull, expecteds)
+	common.RunTest(t, &Generator{}, testdata.TestDataFull, expecteds)
 }
 
 var expecteds = []string{`--

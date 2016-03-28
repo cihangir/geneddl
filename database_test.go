@@ -18,11 +18,8 @@ func TestDatabase(t *testing.T) {
 	common.TestEquals(t, nil, err)
 
 	s = s.Resolve(s)
-	g := New()
-
-	context := common.NewContext()
 	moduleName := strings.ToLower(s.Title)
-	settings := GenerateSettings(g.Name(), moduleName, s)
+	settings := GenerateSettings(GeneratorName, moduleName, s)
 
 	index := 0
 	for _, def := range s.Definitions {
@@ -32,10 +29,10 @@ func TestDatabase(t *testing.T) {
 			continue
 		}
 
-		settingsDef := SetDefaultSettings(g.Name(), settings, def)
+		settingsDef := SetDefaultSettings(GeneratorName, settings, def)
 		settingsDef.Set("tableName", stringext.ToFieldName(def.Title))
 
-		sts, err := DefineDatabase(context, settingsDef, def)
+		sts, err := DefineDatabase(settingsDef, def)
 		if err != nil {
 			t.Fatal(err.Error())
 		}
