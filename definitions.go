@@ -1,3 +1,4 @@
+// Package geneddl provides DDL generation for json schema
 package geneddl
 
 import (
@@ -12,8 +13,10 @@ import (
 	"github.com/cihangir/stringext"
 )
 
+// GeneratorName holds generator name
 const GeneratorName = "ddl"
 
+// Generator provides DDL generation
 type Generator struct {
 	DatabaseName  string
 	SchemaName    string
@@ -22,13 +25,7 @@ type Generator struct {
 	FieldNameCase string `default:"snake"`
 }
 
-func New() *Generator {
-	return &Generator{}
-}
-
-func (g *Generator) Name() string {
-	return GeneratorName
-}
+// New is the constructor for generator struct
 
 // Generate generates the basic CRUD statements for the models
 func (g *Generator) Generate(req *common.Req, res *common.Res) error {
@@ -59,7 +56,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 
 	moduleName := stringext.ToFieldName(req.Schema.Title)
 
-	settings := GenerateSettings(g.Name(), moduleName, req.Schema)
+	settings := GenerateSettings(GeneratorName, moduleName, req.Schema)
 	settings.SetNX("rootPathPrefix", "db")
 	rootPathPrefix := settings.Get("rootPathPrefix").(string)
 	fullPathPrefix := req.Context.Config.Target + rootPathPrefix + "/"
@@ -69,17 +66,17 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		def := req.Schema.Definitions[name]
 
 		// schema should have our generator
-		if !def.Generators.Has(g.Name()) {
+		if !def.Generators.Has(GeneratorName) {
 			continue
 		}
 
-		settingsDef := SetDefaultSettings(g.Name(), settings, def)
+		settingsDef := SetDefaultSettings(GeneratorName, settings, def)
 		settingsDef.Set("tableName", stringext.ToFieldName(def.Title))
 
 		//
 		// generate roles
 		//
-		role, err := DefineRole(context, settingsDef, def)
+		role, err := DefineRole(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -97,7 +94,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate database
 		//
-		db, err := DefineDatabase(context, settingsDef, def)
+		db, err := DefineDatabase(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -115,7 +112,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate extenstions
 		//
-		extenstions, err := DefineExtensions(context, settingsDef, def)
+		extenstions, err := DefineExtensions(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -132,7 +129,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate schema
 		//
-		sc, err := DefineSchema(context, settingsDef, def)
+		sc, err := DefineSchema(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -150,7 +147,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate sequences
 		//
-		sequence, err := DefineSequence(context, settingsDef, def)
+		sequence, err := DefineSequence(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -169,7 +166,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate types
 		//
-		types, err := DefineTypes(context, settingsDef, def)
+		types, err := DefineTypes(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -188,7 +185,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate tables
 		//
-		table, err := DefineTable(context, settingsDef, def)
+		table, err := DefineTable(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -207,7 +204,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 		//
 		// generate constraints
 		//
-		constraints, err := DefineConstraints(context, settingsDef, def)
+		constraints, err := DefineConstraints(settingsDef, def)
 		if err != nil {
 			return err
 		}
@@ -228,18 +225,7 @@ func (g *Generator) Generate(req *common.Req, res *common.Res) error {
 	return nil
 }
 
-// CreateStatementTemplate holds the template for the create sql statement generator
-var CreateStatementTemplate = `{{DefineSQLSchema .Context .Settings .Schema}}
-
-{{DefineSQLSequnce .Context .Settings .Schema}}
-
-{{DefineSQLExtensions .Context .Settings .Schema}}
-
-{{DefineSQLTypes .Context .Settings .Schema}}
-
-{{DefineSQLTable .Context .Settings .Schema}}
-`
-
+// GenerateSettings generates settings for the ddl package
 func GenerateSettings(genName string, moduleName string, s *schema.Schema) schema.Generator {
 	settings, ok := s.Generators.Get(genName)
 	if !ok {
@@ -268,6 +254,7 @@ func GenerateSettings(genName string, moduleName string, s *schema.Schema) schem
 	return settings
 }
 
+// SetDefaultSettings sets the default values for the settings
 func SetDefaultSettings(genName string, defaultSettings schema.Generator, s *schema.Schema) schema.Generator {
 	settings, _ := s.Generators.Get(genName)
 

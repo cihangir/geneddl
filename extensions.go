@@ -10,7 +10,7 @@ import (
 )
 
 // DefineExtensions creates definition for extensions
-func DefineExtensions(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
+func DefineExtensions(settings schema.Generator, s *schema.Schema) ([]byte, error) {
 	exts := make([]string, 0)
 
 	for _, val := range s.Properties {
@@ -44,6 +44,7 @@ func DefineExtensions(context *common.Context, settings schema.Generator, s *sch
 	return clean(buf.Bytes()), nil
 }
 
+// ExtensionsTemplate holds template for db extensions
 var ExtensionsTemplate = `
 -- ----------------------------
 --  Required extensions

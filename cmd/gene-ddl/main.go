@@ -11,7 +11,7 @@ func main() {
 	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig: common.HandshakeConfig,
 		Plugins: map[string]plugin.Plugin{
-			"generate": common.NewGeneratorPlugin(geneddl.New()),
+			"generate": common.NewGeneratorPlugin(&geneddl.Generator{}),
 		},
 	})
 }
