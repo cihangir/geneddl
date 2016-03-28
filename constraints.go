@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cihangir/gene/generators/common"
 	"github.com/cihangir/schema"
 	"github.com/cihangir/stringext"
 )
 
 // DefineConstraints creates constraints definition for tables
-func DefineConstraints(context *common.Context, settings schema.Generator, s *schema.Schema) ([]byte, error) {
+func DefineConstraints(settings schema.Generator, s *schema.Schema) ([]byte, error) {
 	primaryKeyConstraint := ""
 	primaryKey := settings.Get("primaryKey")
 	if primaryKey != nil {
