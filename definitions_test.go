@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/cihangir/gene/generators/common"
+	"github.com/cihangir/gene/testdata"
 )
 
 func TestDefinitions(t *testing.T) {
-	common.RunTest(t, New(), expecteds)
+	common.RunTest(t, New(), testdata.TestDataFull, expecteds)
 }
 
 var expecteds = []string{`--
